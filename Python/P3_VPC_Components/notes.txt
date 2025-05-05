@@ -1,0 +1,16 @@
+https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html
+
+
+Creates a VPC
+
+Creates a public and private subnet
+
+Creates an internet gateway and attaches it to the VPC
+
+Creates a route table and route to the internet gateway
+
+Associates the route table with the public subnet
+
+Creates a security group (for SSH)
+
+Launches an EC2 instance in the private subnet
