@@ -1,0 +1,46 @@
+prog1: Write a program in Python to count the number of running, stopped and terminated instances
+
+Reservations
+-> A list of reservations.
+-> Each reservation groups one or more instances launched together.
+-> Usually contains just one instance, but can be multiple.
+
+Instances
+-> A list of EC2 instance objects within that reservation.
+-> Each object contains all details of the EC2 instance.
+
+response = {
+  "Reservations": response = {
+    'Reservations': [
+        {
+            'ReservationId': str,
+            'OwnerId': str,
+            'Groups': [...],  # (mostly empty for VPC-based instances)
+            'Instances': [
+                {
+                    'InstanceId': str,
+                    'ImageId': str,
+                    'State': {
+                        'Code': int,
+                        'Name': str  # e.g., 'running', 'stopped'
+                    },
+                    'InstanceType': str,
+                    'LaunchTime': datetime,
+                    'PrivateIpAddress': str,
+                    'PublicIpAddress': str,
+                    'Tags': [...],
+                    ...
+                },
+                ...
+            ]
+        },
+        ...
+    ]
+}
+}
+
+--------------------------------------------------------------------------------------------
+
+start_instances(InstanceIds=[])
+stop_instances(Instance_Ids=[])
+terminate_instances(Instance_Ids=[])
