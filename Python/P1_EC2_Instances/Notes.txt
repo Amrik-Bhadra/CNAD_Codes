@@ -1,3 +1,7 @@
+ec2 boto3 documentation link: 
+https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html
+
+
 prog1: Write a program in Python to count the number of running, stopped and terminated instances
 
 Reservations

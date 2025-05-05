@@ -1,0 +1,10 @@
+user - crud
+fetch perticular user
+policiy create
+group create
+policy attach to group
+add 2 user to group
+
+roles create
+assume role by user 
+then perform task becoming that user whether role is assumed or not
