@@ -1,0 +1,23 @@
+Option A: Use AWS Console
+Go to the AWS Console → CloudFormation → Stacks.
+
+Click "Create stack" → "With new resources (standard)".
+
+Upload your YAML file under "Template".
+
+Provide a stack name (e.g., Boto3VPCStack).
+
+For parameters, enter your Key Pair Name (must exist in your region).
+
+Review and click Create stack.
+
+Wait for the status to show CREATE_COMPLETE
+
+
+------------------------------------------------------------------------------
+
+aws cloudformation create-stack \
+  --stack-name Boto3VPCStack \
+  --template-body file://your-template.yaml \
+  --parameters ParameterKey=KeyPairName,ParameterValue=your-keypair-name \
+  --capabilities CAPABILITY_NAMED_IAM
