@@ -1,0 +1,12 @@
+create key pair:
+
+Resources:
+  MyKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: my-generated-keypair
+      KeyType: rsa
+      Tags:
+        - Key: Name
+          Value: GeneratedKeyPair
+

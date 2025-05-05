@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation Template to perform S3 Operations including static website hosting'
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Name of the S3 Bucket
+  
+  EnableVersioning:
+    Type: String
+    AllowedValues:
+      - "Enable"
+      - "Suspended"
+    Default: "Suspended"
+    Description: Enable or suspend versioning on the bucket
+    
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: !Ref EnableVersioning
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${BucketName}_bucket"
+
+  # Optional: Public read bucket policy (for static hosting)
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MyS3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+              - s3:GetObject
+            Resource: !Sub "${MyS3Bucket.Arn}/*"
+
+Outputs:
+  S3BucketName:
+    Description: Name of the created S3 bucket
+    Value: !Ref MyS3Bucket
+
+  S3BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt MyS3Bucket.Arn
+
+  WebsiteURL:
+    Description: Static website endpoint
+    Value: !GetAtt MyS3Bucket.WebsiteURL
