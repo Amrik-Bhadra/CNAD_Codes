@@ -1,0 +1,162 @@
+pip install pymysql
+
+Notes:
+You must open MySQL port (3306) in your RDS security group for your IP address.
+Free-tier allows 750 hours/month of RDS usage, be careful with auto-scaling or idle instances.
+
+
+Imports and Configuration
+
+import pymysql
+This imports the pymysql library to connect and interact with MySQL databases (hosted on RDS in this case).
+
+
+RDS_HOST = "your-rds-endpoint.amazonaws.com"
+RDS_USER = "admin"
+RDS_PASSWORD = "yourpassword"
+RDS_DB = "school"
+Replace these placeholders with your RDS credentials. These are used to connect to your RDS instance.
+
+📌 Connecting to RDS
+
+def connect():
+    return pymysql.connect(
+        host=RDS_HOST,
+        user=RDS_USER,
+        password=RDS_PASSWORD,
+        database=RDS_DB
+    )
+A reusable function that establishes a connection to your RDS MySQL database using the credentials provided above.
+
+📌 CREATE Operation
+
+def create_student():
+    conn = connect()
+    cursor = conn.cursor()
+Connect to the DB and create a cursor to execute SQL statements.
+
+    student_id = input("Enter student ID: ")
+    name = input("Enter student name: ")
+    age = int(input("Enter student age: "))
+Get user input for the new student's ID, name, and age.
+
+    cursor.execute("INSERT INTO students (student_id, name, age) VALUES (%s, %s, %s)", 
+                   (student_id, name, age))
+    conn.commit()
+Insert the student record into the students table using a parameterized SQL query to avoid SQL injection.
+
+conn.commit() saves the change in the DB.
+
+📌 READ Operation
+
+def read_student():
+    conn = connect()
+    cursor = conn.cursor()
+    student_id = input("Enter student ID to read: ")
+Takes a student ID from the user to fetch their record.
+
+    cursor.execute("SELECT * FROM students WHERE student_id = %s", (student_id,))
+    result = cursor.fetchone()
+Selects the student record from the table where ID matches.
+
+    if result:
+        print("Student Record:", result)
+    else:
+        print("Student not found.")
+Displays result if found, otherwise prints a not found message.
+
+📌 UPDATE Operation
+
+def update_student():
+    conn = connect()
+    cursor = conn.cursor()
+    student_id = input("Enter student ID to update: ")
+    new_age = int(input("Enter new age: "))
+User inputs ID of student to update and the new age.
+
+    cursor.execute("UPDATE students SET age = %s WHERE student_id = %s", (new_age, student_id))
+    conn.commit()
+    print("Student updated successfully.")
+Runs SQL query to update the student's age.
+
+📌 DELETE Operation
+
+def delete_student():
+    conn = connect()
+    cursor = conn.cursor()
+    student_id = input("Enter student ID to delete: ")
+Takes student ID as input.
+
+    cursor.execute("DELETE FROM students WHERE student_id = %s", (student_id,))
+    conn.commit()
+    print("Student deleted successfully.")
+Runs the SQL query to delete the student and commits the change.
+
+📌 Main Menu
+
+def main():
+    while True:
+        print("\nRDS MySQL - Student CRUD Operations")
+        ...
+        choice = input("Enter choice (1-5): ")
+Displays the main menu and gets user choice.
+
+        if choice == '1':
+            create_student()
+        elif choice == '2':
+            read_student()
+        elif choice == '3':
+            update_student()
+        elif choice == '4':
+            delete_student()
+        elif choice == '5':
+            break
+        else:
+            print("Invalid option. Try again.")
+Calls the appropriate function based on user input.
+
+📌 Program Entry Point
+
+if __name__ == "__main__":
+    main()
+Ensures the main menu runs only when the script is executed directly.
+
+----------------------------------------------------------------------------------------------
+
+🎓 Viva Questions and Answers on RDS CRUD Using Python
+🔹 Basic RDS & Python Questions
+Q1. What is Amazon RDS?
+A: Amazon RDS is a managed relational database service by AWS that supports databases like MySQL, PostgreSQL, Oracle, and SQL Server.
+
+Q2. Which RDS engine is used in this Python CRUD program?
+A: MySQL.
+
+Q3. What Python library is used to connect to MySQL in RDS?
+A: pymysql.
+
+🔹 CRUD Concepts
+Q4. What does CRUD stand for?
+A: Create, Read, Update, Delete – the basic operations on a database.
+
+Q5. How is data inserted into RDS using Python?
+A: Using an INSERT SQL statement executed through a cursor.
+
+Q6. How do you prevent SQL injection in your Python queries?
+A: By using parameterized queries (%s placeholders with tuple values).
+
+🔹 Technical and Security Aspects
+Q7. How do you allow Python code to connect to RDS?
+A: Ensure port 3306 is open for your IP in the RDS security group, and use valid credentials in your code.
+
+Q8. Why is conn.commit() used?
+A: It saves the changes to the database permanently.
+
+Q9. What is the purpose of conn.close() and cursor.close()?
+A: To release database resources and avoid memory leaks or connection issues.
+
+🔹 Advanced Questions
+Q10. Can we run this program for PostgreSQL RDS instead of MySQL?
+A: Yes, but you need to use the psycopg2 library and PostgreSQL-compatible SQL syntax.
+
+Q11. How can we enhance this program further?
+A: By adding exception logging, GUI, API endpoints using Flask/FastAPI, or AWS Secrets Manager to manage credentials securely.

@@ -1,0 +1,140 @@
+Step-by-step Explanation
+1. Importing Required Libraries
+
+import boto3
+from botocore.exceptions import ClientError
+boto3: Main AWS SDK for Python used to connect to DynamoDB.
+
+ClientError: To catch and handle any AWS service-related errors.
+
+2. Connecting to DynamoDB
+
+dynamodb = boto3.resource('dynamodb', region_name='ap-south-1')
+Connects to DynamoDB in the Mumbai (ap-south-1) region using default AWS credentials.
+
+resource is a high-level abstraction over the client and is easier to use.
+
+3. Create Table Function
+
+def create_table():
+    ...
+Creates a DynamoDB table called Students with:
+
+Partition key: student_id of type String (S)
+
+Provisioned capacity: 1 Read Capacity Unit (RCU) and 1 Write Capacity Unit (WCU) — free tier safe.
+
+Uses a waiter to pause code until the table is fully created.
+
+Wrapped in try-except to handle errors if the table already exists or permissions are missing.
+
+4. Insert Item (Create)
+
+def insert_item():
+    ...
+Asks the user for student_id, name, and age, and inserts the data into the table.
+
+Uses put_item() to insert the dictionary directly.
+
+5. Read Item
+
+def read_item():
+    ...
+Prompts for student_id and uses get_item() to retrieve the matching record.
+
+Checks if the item exists using .get('Item').
+
+6. Update Item
+
+def update_item():
+    ...
+Prompts for student_id and new age.
+
+Uses update_item() with:
+
+UpdateExpression: DynamoDB-specific syntax for updates.
+
+ExpressionAttributeValues: Bind the new value.
+
+Returns the updated attributes for confirmation.
+
+7. Delete Item
+
+def delete_item():
+    ...
+Prompts for the student_id and deletes that item using delete_item().
+
+8. Delete Table
+
+def delete_table():
+    ...
+Deletes the entire DynamoDB table using delete().
+
+9. Main Menu
+
+def main():
+    ...
+Console-based interactive menu for users to pick operations 1–7.
+
+Runs in a while loop until user chooses to exit.
+
+📝 Example Table Structure
+| student\_id | name  | age |
+| ----------- | ----- | --- |
+| S001        | Alice | 20  |
+| S002        | Bob   | 22  |
+
+
+✅ Summary of DynamoDB Concepts Used
+| Concept         | Purpose                     |
+| --------------- | --------------------------- |
+| Table creation  | Set schema and throughput   |
+| Partition key   | Uniquely identify each item |
+| `put_item()`    | Insert new records          |
+| `get_item()`    | Fetch records by key        |
+| `update_item()` | Modify specific attributes  |
+| `delete_item()` | Remove records              |
+| `delete()`      | Drop the whole table        |
+
+------------------------------------------------------------------------------------------------
+Viva Questions and Answers on DynamoDB CRUD
+🔹 Basics
+Q1. What is DynamoDB?
+A: DynamoDB is a fully managed NoSQL database service by AWS that offers fast and predictable performance with seamless scalability.
+
+Q2. What kind of data model does DynamoDB use?
+A: It uses a key-value and document-based data model.
+
+Q3. What is a primary key in DynamoDB?
+A: A primary key uniquely identifies each item. It can be a partition key or a combination of partition and sort key.
+
+🔹 Programming-Related
+Q4. Which Python library is used to interact with DynamoDB?
+A: boto3.
+
+Q5. What does put_item() do?
+A: It adds a new item to the table or replaces it if it already exists.
+
+Q6. How do you read an item from DynamoDB?
+A: Using get_item() with the primary key.
+
+Q7. How is data updated in DynamoDB?
+A: With update_item() using UpdateExpression and ExpressionAttributeValues.
+
+🔹 Error Handling and Security
+Q8. What happens if AWS credentials are missing?
+A: The script will raise a NoCredentialsError.
+
+Q9. Where should credentials be configured securely?
+A: Either in AWS CLI (~/.aws/credentials), environment variables, or use IAM roles if running on EC2.
+
+🔹 Advanced
+Q10. Is DynamoDB free in the AWS Free Tier?
+A: Yes, up to 25 GB of storage and 200 million requests per month are free.
+
+Q11. Can you store complex data types like lists and maps?
+A: Yes, DynamoDB supports nested data using documents (JSON-like).
+
+Q12. How is DynamoDB different from RDS?
+A: DynamoDB is NoSQL and schema-less, while RDS is a relational (SQL) database.
+
