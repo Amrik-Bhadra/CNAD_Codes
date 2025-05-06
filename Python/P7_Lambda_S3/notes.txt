@@ -1,0 +1,153 @@
+Explanation of the Code:
+Input Event: The Lambda function is triggered by an event from S3. The event provides details such as the bucket name and the object key (i.e., the file name).
+
+S3 Client Initialization: We use boto3.client('s3') to create a client that allows us to interact with S3.
+
+Fetching Object Metadata: Using the head_object() method, we fetch the metadata of the object, which includes properties like:
+
+ContentLength: The size of the object in bytes.
+
+LastModified: When the object was last modified.
+
+ContentType: The MIME type of the object.
+
+Logging Object Details: We print the details of the object (you could also send this information to a monitoring system or save it elsewhere).
+
+Returning a Response: The function returns a status code of 200 indicating success, and includes a message in the body.
+
+------------------------------------------------------------------------------------------------------
+
+S3 Event Configuration to Trigger the Lambda:
+Event Type: Whenever an object is created in the S3 bucket, the event will trigger the Lambda function.
+
+Trigger: You need to configure the S3 bucket to send an event notification to Lambda on object uploads.
+
+Steps for Configuring S3 to Trigger Lambda:
+1. Create S3 Bucket:
+Go to S3 in AWS console.
+Create a bucket (for example, my-example-bucket).
+
+
+2. Create Lambda Function:
+Go to Lambda in AWS console.
+Create a new function (you can paste the provided Python code here).
+Give necessary permissions to Lambda (like reading from S3).
+
+3. Add S3 Trigger to Lambda:
+In the Lambda console, go to Configuration > Triggers.
+Click on Add Trigger, select S3.
+Choose the S3 bucket you created (my-example-bucket).
+For Event type, choose Object Created (All).
+Save the trigger.
+
+4. IAM Role Permissions:
+Ensure the Lambda function has an IAM role with the following permissions:
+s3:GetObject
+s3:ListBucket
+
+The role should have the policy attached that allows Lambda to read from S3. Here’s a sample IAM policy for Lambda:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::my-example-bucket",
+                "arn:aws:s3:::my-example-bucket/*"
+            ]
+        }
+    ]
+}
+
+--------------------------------------------------------------------------------------------
+
+API Setup for Testing Lambda with Postman
+1. Create an API Gateway to expose the Lambda function to HTTP requests. This allows you to trigger the Lambda function via HTTP, even though the function is intended to handle S3 events.
+
+2. Set Up the API Gateway:
+-> Go to API Gateway in the AWS Console.
+-> Create a new HTTP API (for simplicity).
+-> Configure a route, for example /process-s3, and set it to use your Lambda function as the integration.
+
+3. Lambda Permissions:
+Ensure that the Lambda function has the correct permissions to access S3 (using the Lambda execution role).
+Set the appropriate permissions for API Gateway to invoke the Lambda function.
+
+4. Create the Postman Request:
+The Lambda function expects an event payload that is structured like an S3 event. Here's an example of how to format the event:
+{
+  "Records": [
+    {
+      "s3": {
+        "bucket": {
+          "name": "your-bucket-name"
+        },
+        "object": {
+          "key": "your-object-key"
+        }
+      }
+    }
+  ]
+}
+
+5. Invoke the Lambda Using Postman:
+Once the API Gateway is deployed, you will receive an Invoke URL.
+For example, the API URL might look like:
+https://<api-id>.execute-api.<region>.amazonaws.com/test/process-s3
+{
+  "Records": [
+    {
+      "s3": {
+        "bucket": {
+          "name": "my-example-bucket"
+        },
+        "object": {
+          "key": "my-uploaded-file.txt"
+        }
+      }
+    }
+  ]
+}
+
+---------------------------------------------------------------------------------------------
+
+Steps to Test the Lambda Function using Postman
+1. Create an API Gateway:
+Go to the API Gateway console in AWS.
+Click on Create API.
+Choose HTTP API (recommended for simple use cases).
+Click Build.
+
+2. Configure API Gateway:
+-> In the API Gateway settings, create a new route. This route will listen for requests and trigger the Lambda function when an HTTP request is made.
+-> Choose POST or GET as the HTTP method (based on your preference).
+-> Set the Integration type to Lambda Function.
+-> In the Lambda Function field, select your previously created Lambda function.
+
+3. Set Up Permissions:
+When you associate your Lambda function with the API Gateway, AWS will automatically set up the necessary permissions so that the API Gateway can invoke your Lambda function. However, you may need to ensure that the Lambda execution role has the correct permissions to allow invocation by API Gateway.
+
+Check the Lambda role to ensure it has the following permission attached to it (usually granted automatically):
+{
+    "Effect": "Allow",
+    "Action": "lambda:InvokeFunction",
+    "Resource": "arn:aws:lambda:region:account-id:function:function-name"
+}
+
+
+4. Deploy the API:
+-> After setting up the API Gateway, you need to deploy the API. Choose Deployments and then Create a new stage (e.g., test).
+-> Once deployed, you will receive an Invoke URL (the endpoint) for the API Gateway.
+-> Testing the Lambda Function Using Postman:
+-> In Postman, use the Invoke URL from the API Gateway and add the appropriate endpoint path and HTTP method.
+
+The URL format for your API will look like this:
+https://<api-id>.execute-api.<region>.amazonaws.com/test/<resource-path>
+
+
+For example, if you set your route to /upload, the API endpoint would look like:
+https://<api-id>.execute-api.<region>.amazonaws.com/test/upload
