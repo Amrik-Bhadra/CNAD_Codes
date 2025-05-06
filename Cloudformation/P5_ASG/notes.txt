@@ -1,0 +1,69 @@
+This CloudFormation YAML does the following:
+
+1. VPC Creation
+A custom VPC (10.0.0.0/16) is created with DNS support and DNS hostname enabled for easier public DNS resolution.
+
+2. Subnets
+Two subnets are created in two Availability Zones:
+SubnetA in ap-south-1a
+SubnetB in ap-south-1b
+These provide high availability for the Auto Scaling Group.
+
+3. Security Group
+A security group is created allowing:
+SSH access (port 22) from anywhere
+HTTP access (port 80) from anywhere
+
+4. Launch Template
+A launch template defines the EC2 instance configuration:
+Uses Amazon Linux 2 AMI
+t2.micro instance type
+SSH key pair from parameters
+Security group attached
+User data installs Apache (httpd) and creates a sample HTML file
+
+5. Auto Scaling Group (ASG)
+Launches EC2 instances based on the launch template
+Min size = 1, Max size = 3
+Attached to both subnets for AZ redundancy
+Health check grace period = 30 seconds
+Default EC2 health check
+
+6. Target Tracking Scaling Policy
+Automatically increases/decreases EC2 instances based on average CPU utilization
+Target value is set to 30% CPU usage
+
+-----------------------------------------------------------------------------------------------------
+
+Viva Questions and Answers
+Q1. What does a Launch Template do in this setup?
+A: A Launch Template defines the configuration for EC2 instances such as AMI ID, instance type, key pair, security groups, and user data. It's used by the Auto Scaling Group to launch new instances.
+
+Q2. Why do we use two subnets in different Availability Zones?
+A: To ensure high availability and fault tolerance. If one Availability Zone fails, the instances can still run in the other.
+
+Q3. What is the purpose of a Target Tracking Scaling Policy?
+A: It automatically adjusts the number of EC2 instances in the ASG based on a predefined metric—here, average CPU utilization. The policy tries to keep CPU usage around 30%.
+
+Q4. Why are EC2 instances not getting public IP addresses?
+A: Because public IP assignment is not explicitly enabled in the subnets or in the launch template. This was resolved earlier by modifying the subnets to assign public IPs by default or using a NAT Gateway.
+
+Q5. What does the UserData script do?
+A: It installs Apache (httpd), starts it, enables it to run on boot, and creates a simple HTML page displaying the hostname of the instance.
+
+Q6. What is the difference between MinSize, MaxSize, and DesiredCapacity?
+A:  MinSize: Minimum number of instances always running.
+    MaxSize: Maximum number of instances that can run.
+    DesiredCapacity: Initial number of instances to launch.
+
+Q7. What happens if one of the EC2 instances fails a health check?
+A: The Auto Scaling Group will terminate the unhealthy instance and replace it with a new one using the launch template.
+
+Q8. Can we attach a load balancer in this setup?
+A: Yes, but in this template it's skipped as per the requirement. Load balancers help distribute traffic across multiple instances.
+
+Q9. How can we make the instance accessible via the internet?
+A: By associating a public IP to the instances, placing them in a public subnet, and attaching an Internet Gateway to the VPC.
+
+Q10. What is the benefit of using CloudFormation for this?
+A: CloudFormation automates infrastructure provisioning, ensures repeatability, and maintains version control of infrastructure as code.

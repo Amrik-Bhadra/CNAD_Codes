@@ -1,0 +1,30 @@
+Viva Questions & Answers:
+Q1. What is an Application Load Balancer?
+A: An Application Load Balancer (ALB) distributes incoming HTTP/HTTPS traffic across multiple targets (like EC2 instances) and works at Layer 7 (Application Layer).
+
+Q2. Why do we use two subnets in different availability zones?
+A: ALBs require at least two subnets in different AZs to ensure high availability and fault tolerance.
+
+Q3. What does the MapPublicIpOnLaunch property do?
+A: It ensures that instances launched in the subnet are assigned a public IP address so they can be accessed from the internet.
+
+Q4. What is the role of the Security Group in this setup?
+A: The security group allows HTTP (port 80) and SSH (port 22) traffic to the EC2 instances.
+
+Q5. What is a Target Group in ALB?
+A: A target group is a logical grouping of resources (like EC2 instances) that receive traffic from a load balancer.
+
+Q6. Why is UserData used in the Launch Template?
+A: It’s used to configure the EC2 instance on launch — here, to install and start Apache and set up a basic web page.
+
+Q7. What is the default action of the listener?
+A: It forwards all incoming HTTP requests on port 80 to the specified target group.
+
+Q8. What kind of health checks does the ALB perform?
+A: By default, ALB performs HTTP health checks on targets to ensure traffic is only sent to healthy instances.
+
+Q9. Can ALB handle HTTPS traffic?
+A: Yes, ALB supports HTTPS (SSL/TLS termination) if an SSL certificate is attached.
+
+Q10. What will happen if one AZ goes down?
+A: The ALB will continue routing traffic to instances in the healthy AZ, ensuring high availability.
