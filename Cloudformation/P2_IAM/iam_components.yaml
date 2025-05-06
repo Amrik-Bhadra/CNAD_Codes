@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template for IAM User, Group, Policy, and Role
+
+Parameters:
+  IAMUserName:
+    Type: String
+    Default: DemoUser
+    Description: Name of the IAM User
+
+  IAMGroupName:
+    Type: String
+    Default: DemoGroup
+    Description: Name of the IAM Group
+
+  IAMRoleName:
+    Type: String
+    Default: DemoRole
+    Description: Name of the IAM Role
+
+Resources:
+
+  # IAM User
+  MyIAMUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Ref IAMUserName
+
+  # IAM Group
+  MyIAMGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Ref IAMGroupName
+
+  # IAM Policy (Custom)
+  MyCustomPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: AllowS3AndEC2ReadOnly
+      Groups:
+        - !Ref MyIAMGroup
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - ec2:DescribeInstances
+              - ec2:DescribeVolumes
+            Resource: "*"
+
+  # Attach User to Group
+  AttachUserToGroup:
+    Type: AWS::IAM::UserToGroupAddition
+    Properties:
+      GroupName: !Ref MyIAMGroup
+      Users:
+        - !Ref MyIAMUser
+
+  # IAM Role
+  MyIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref IAMRoleName
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: EC2AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                Resource: "*"
+
+Outputs:
+  IAMUserName:
+    Value: !Ref MyIAMUser
+  IAMGroupName:
+    Value: !Ref MyIAMGroup
+  IAMRoleName:
+    Value: !Ref MyIAMRole

@@ -1,0 +1,169 @@
+This template includes:
+
+IAM User
+IAM Group
+IAM Policy (custom)
+IAM Role
+Attaching policy to group, user to group, and role trust relationship
+---------------------------------------------------------------------------------
+
+| Component                  | Purpose                                                |
+| -------------------------- | ------------------------------------------------------ |
+| `IAM::User`                | Creates a user for identity management.                |
+| `IAM::Group`               | Group to manage permissions collectively.              |
+| `IAM::Policy`              | Custom policy allowing read-only access to EC2 and S3. |
+| `IAM::UserToGroupAddition` | Adds the user to the group.                            |
+| `IAM::Role`                | Role assumed by EC2 with basic describe access.        |
+
+------------------------------------------------------------------------------------------------------
+
+✅ Basic IAM Concepts
+Q1: What is IAM in AWS?
+A: IAM (Identity and Access Management) is a web service that helps you securely control access to AWS services and resources. It lets you manage users, groups, roles, and permissions.
+
+Q2: What are IAM Users, Groups, Roles, and Policies?
+IAM User: A person or application that interacts with AWS.
+
+IAM Group: A collection of IAM users. Policies attached to a group apply to all its users.
+
+IAM Role: An AWS identity with permissions that can be assumed temporarily by users or services.
+
+IAM Policy: A document that defines permissions using JSON syntax.
+
+Q3: What are the types of policies in IAM?
+A:
+
+Managed Policies: Predefined by AWS or customer-created and reusable.
+
+Inline Policies: Embedded directly within a user, group, or role.
+
+Permission Policies: Control what actions can be performed.
+
+Trust Policies: Control who can assume a role (used in roles).
+
+---------------------------------------------------------------------------------------
+✅ Permissions & Policies
+Q4: What is the structure of an IAM policy?
+A:
+An IAM policy uses JSON and includes:
+
+Version
+
+Statement (which contains):
+
+Effect (Allow/Deny)
+
+Action (e.g., s3:ListBucket)
+
+Resource (e.g., arn:aws:s3:::my-bucket)
+
+Q5: What is the default behavior of IAM if no policies are attached?
+A: By default, IAM users, groups, and roles have no permissions. You must explicitly grant permissions.
+
+Q6: What is an IAM trust relationship?
+A: It defines who can assume a role. For example, an EC2 instance can assume a role if it’s listed as a principal in the trust policy.
+
+Q7: What is the difference between inline and managed policies?
+A:
+
+Type	Characteristics
+Inline	Tightly coupled, only for a single identity.
+Managed	Reusable, attachable to multiple identities.
+
+------------------------------------------------------------------------------
+✅ Security & Best Practices
+Q8: What are IAM best practices?
+A:
+
+Use least privilege.
+
+Enable MFA for all users.
+
+Use IAM roles for EC2 and other services.
+
+Avoid using root user.
+
+Rotate access keys regularly.
+
+Use policy conditions for fine-grained access.
+
+Q9: What is the IAM root user?
+A: It's the AWS account's original owner. It has full unrestricted access and should be used only for essential tasks (e.g., billing setup).
+
+Q10: What is MFA in IAM?
+A: Multi-Factor Authentication adds an extra layer of security requiring a password and a one-time code (from an authenticator app or device).
+
+--------------------------------------------------------------------------------
+✅ IAM Roles & Use Cases
+Q11: When would you use IAM roles instead of users?
+A: When you want temporary, delegated access — e.g., an EC2 instance accessing S3 or a Lambda function calling DynamoDB.
+
+Q12: What services can assume IAM roles?
+A: EC2, Lambda, ECS, CodeBuild, etc., and even other AWS accounts (via cross-account access).
+
+Q13: What is the difference between a role and a user with access keys?
+A:
+
+IAM User	IAM Role
+Long-term access	Temporary credentials
+Needs key rotation	No keys stored or rotated
+Assigned directly	Assumed dynamically by services
+
+-------------------------------------------------------------------------------------------
+✅ Policy Evaluation & Troubleshooting
+Q14: How does AWS evaluate IAM policies?
+A: AWS uses policy evaluation logic:
+
+By default: Deny everything
+
+Explicit allow: Grants access
+
+Explicit deny: Overrides all allows
+
+Q15: What tools can help debug IAM permissions issues?
+A:
+
+IAM Policy Simulator
+
+CloudTrail logs
+
+Access Advisor
+
+Service control policies (if in org)
+
+Q16: What happens if a user has multiple policies with conflicting permissions?
+A: The most restrictive rule applies. An explicit deny always overrides allow.
+
+Q17: Can an IAM user assume a role?
+A: Yes, using the AWS STS AssumeRole API, the user can temporarily assume the role if trust is configured.
+
+Q18: How do you allow cross-account access using IAM?
+A:
+
+Create a role in Account B.
+
+Add Account A in the trust policy.
+
+User in Account A uses AssumeRole.
+---------------------------------------------------------------------------
+✅ Real-World Scenarios
+Q19: How would you allow EC2 to access S3 securely?
+A:
+
+Create an IAM Role with S3 permissions.
+
+Add trust relationship for EC2.
+
+Attach role to EC2 instance.
+
+Q20: How would you restrict a user to only upload files to a specific S3 bucket?
+A: Attach a policy like:
+
+json
+Copy
+Edit
+{
+  "Effect": "Allow",
+  "Action": "s3:PutObject",
+  "Resource": "arn:aws:s3:::my-bucket/*"
+}
