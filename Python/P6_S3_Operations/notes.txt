@@ -1,0 +1,127 @@
+Basic S3 Conceptual Questions
+Q1: What is Amazon S3?
+A:
+Amazon S3 (Simple Storage Service) is a fully managed object storage service that allows you to store and retrieve unlimited data from anywhere on the internet. It's highly durable, scalable, and secure.
+
+Q2: What are the main components in S3?
+A:
+The two primary components in S3 are:
+
+Buckets – Containers for storing objects.
+
+Objects – The actual data (files) stored in buckets along with metadata.
+
+Q3: What is the difference between object storage and block storage?
+A:
+
+Object storage (like S3) stores data as objects with metadata and a unique identifier.
+
+Block storage (like EBS) divides data into blocks and stores them individually.
+
+Q4: What are S3 storage classes?
+A:
+S3 offers different storage classes based on access frequency and cost:
+
+S3 Standard
+
+S3 Intelligent-Tiering
+
+S3 Standard-IA (Infrequent Access)
+
+S3 One Zone-IA
+
+S3 Glacier and Glacier Deep Archive
+
+🔐 Security and Access
+Q5: How do you secure access to your S3 bucket?
+A:
+
+By using IAM policies and bucket policies
+
+By enabling MFA delete and encryption
+
+By restricting public access through block public access settings
+
+Q6: What are bucket policies and how are they different from IAM policies?
+A:
+
+Bucket Policies are JSON-based permissions attached directly to the bucket.
+
+IAM Policies are attached to users, roles, or groups and define what AWS resources they can access.
+
+Q7: What is the default visibility of an S3 bucket and object?
+A:
+By default, all buckets and objects are private. Access must be explicitly granted.
+
+🛠️ Practical / Coding-Based Questions
+Q8: Which Python library is used to work with S3 in AWS?
+A:
+boto3 is the official AWS SDK for Python to interact with AWS services like S3.
+
+Q9: What method is used to upload a file to S3 using boto3?
+A:
+
+python
+Copy
+Edit
+s3.upload_file(local_file_path, bucket_name, object_name)
+Q10: How do you download a file from S3 using Python?
+A:
+
+python
+Copy
+Edit
+s3.download_file(bucket_name, object_name, local_download_path)
+Q11: What happens if you try to delete a non-empty bucket in S3?
+A:
+You will get an error. You must first delete all objects in the bucket before deleting it.
+
+Q12: How can you list all the objects in an S3 bucket?
+A:
+Using:
+
+python
+Copy
+Edit
+response = s3.list_objects_v2(Bucket=bucket_name)
+for obj in response.get('Contents', []):
+    print(obj['Key'])
+⚠️ Error & Troubleshooting
+Q13: What is NoCredentialsError in boto3?
+A:
+It occurs when your AWS credentials are not configured or not found. Use aws configure to set credentials locally.
+
+Q14: What are some common errors you may face with S3?
+A:
+
+NoSuchBucket: When the bucket name is incorrect or deleted.
+
+AccessDenied: When you lack the necessary permissions.
+
+NoCredentialsError: AWS credentials not found or misconfigured.
+
+📦 Advanced Questions
+Q15: What is versioning in S3?
+A:
+Versioning allows you to preserve, retrieve, and restore every version of every object in a bucket.
+
+Q16: What is a presigned URL?
+A:
+A presigned URL is a URL that gives temporary access to a private object in S3 without making it public.
+
+Q17: Can you host a static website on S3?
+A:
+Yes, S3 supports static website hosting by enabling static website hosting and making the objects publicly accessible.
+
+Q18: What is the maximum file size allowed for upload to S3 in a single PUT operation?
+A:
+The maximum is 5 GB per single PUT operation. For larger files (up to 5 TB), use multipart upload.
+
+Q19: Can two buckets have the same name in different AWS regions?
+A:
+No, S3 bucket names are globally unique across all AWS accounts and regions.
+
+Q20: How does S3 ensure data durability?
+A:
+S3 stores multiple copies of data across multiple Availability Zones (AZs), ensuring 99.999999999% (11 nines) durability.
+
